@@ -36,7 +36,7 @@ if __name__ == "__main__":
         print("2. Twitter Search - full information(print)")
         print("3. Twitter Search - usernames only")
         print("4. Twitter Search - Bot Check")
-        
+        print("5. Twitter Search - User Tweets")
         print("0. Quit")
         user_choice = str(input(">> "))
         
@@ -69,7 +69,12 @@ if __name__ == "__main__":
                 twitter_data = Twitter_Search(url)
                 full_twitter_data = twitter_data.get_raw_information()
                 twitter_data.bot_check()
-            
+            elif(user_choice == "5"):
+                username = str(input("Username: "))
+                username = "from:" + username
+                twitter_data = Twitter_Search(username)
+                tweets = twitter_data.get_user_tweets()
+                
             elif(user_choice == "0"):
                 quit = True
                 sys.exit()

@@ -2,7 +2,8 @@ import twitter
 import json
 import botometer
 import config
-
+from collections import Counter
+import re
 
 class Twitter_Search:
 
@@ -56,6 +57,32 @@ class Twitter_Search:
 
         return self.usernames
 
+    def get_user_tweets(self):
+        # later on get the first and last time stamp to see how much time between last x amount of tweets
+
+        # create an empty dict to store the latest platform
+        tweet_platform = []
+        
+        for i in self.search_results:
+
+            # since the source has html tags we'll strip that away first
+            source = re.search(">([^>]+)<", i.source).group()
+            source = source[1:-1]
+            tweet_platform.append(source)
+
+            print("================")
+            print("Tweet: " + i.text)
+            print("Source: " + source)
+            print("Created At: " + i.created_at)
+            print("Hashtags: " + str(i.hashtags))
+            print("User Mentions: " + str(i.user_mentions))
+            print("\n")
+
+        print("Tweet Stats:")
+        print(Counter(tweet_platform))
+
+        
+    # eventually this needs to be moved to it's own class
     def bot_check(self):
 
         twitter_app_auth = {
