@@ -17,9 +17,6 @@ class Twitter_Search:
         self.full_account_information = []
         
     def get_raw_information(self):
-        
-        # create an empty dictionary to store account information
-        #full_account_information = []
 
         for i in self.search_results:
             account = {}
@@ -75,7 +72,8 @@ class Twitter_Search:
         for i in self.full_account_information:
             bot_score = bom.check_account(i["username"])
             print("Username: " + i["username"])
-            print("Bot Score: " + str(bot_score["display_scores"]["english"]))
+            print("Bot Score(English): " + str(bot_score["display_scores"]["english"]))
+            print("Bot Score(Universal): " + str(bot_score["display_scores"]["universal"]))
             print(self.full_account_information[counter])
             print("\n")
             counter = counter + 1
