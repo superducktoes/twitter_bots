@@ -4,6 +4,9 @@ import botometer
 import config
 from collections import Counter
 import re
+from bs4 import BeautifulSoup
+import requests
+import time
 
 class Twitter_Search:
 
@@ -107,9 +110,9 @@ class Twitter_Search:
             counter = counter + 1
 
     def _get_bot_score(self, username):
-        # can also search bot sentinel https://botsentinel.com/category/all?s=obannons1969111
-        # in the future return 1 if trollbot or 0 if not
-        trollbot = 0
+
+        # This checks the bot sentinel site and returns 1 if the user is found there and 0 if not
+        trollbot = self._get_trollbot_account(username)
         
         twitter_app_auth = {
             "consumer_key": config.consumer_key,
@@ -129,3 +132,22 @@ class Twitter_Search:
                      "Trollbot" : trollbot}
         
         return bot_score
+
+    def _get_trollbot_account(self,username):
+
+        url_query = "https://botsentinel.com/category/all?s={}".format(username)
+
+        # make the request to bot sentinel
+        r = requests.get(url_query, verify=False)
+
+        # create bs object and search
+        soup = BeautifulSoup(r.content, "html.parser")
+        data = soup.find_all("div", class_="list-item dash-shadow-box")
+        data = str(data[0])
+
+        # sleep since there's not an official api to call
+        time.sleep(5)
+        if "/category/trollbot" in data:
+            return 1
+        else:
+            return 0
