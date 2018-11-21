@@ -7,13 +7,17 @@ import re
 
 class Twitter_Search:
 
-    def __init__(self, to_search):
+    def __init__(self, to_search, limit):
         self.api = twitter.Api(consumer_key=config.consumer_key,
                                consumer_secret=config.consumer_secret,
                                access_token_key=config.access_token_key,
                                access_token_secret=config.access_token_secret)
+        
+        # this is here just in case. don't want to blow up any api calls yet...
+        if(limit > 100):
+            limit = 100
 
-        self.search_results = self.api.GetSearch(term=to_search, count=25)
+        self.search_results = self.api.GetSearch(term=to_search, count=limit)
         self.usernames = []
         self.full_account_information = []
         
@@ -62,7 +66,8 @@ class Twitter_Search:
 
         # create an empty dict to store the latest platform
         tweet_platform = []
-        
+        # get the screen name in case we want to check the bot score
+        screen_name = ""
         for i in self.search_results:
 
             # since the source has html tags we'll strip that away first
@@ -77,30 +82,50 @@ class Twitter_Search:
             print("Hashtags: " + str(i.hashtags))
             print("User Mentions: " + str(i.user_mentions))
             print("\n")
+            screen_name = i.user.screen_name
 
+        user_choice = str(input("Check account's bot score? (y/n)"))
+        if(user_choice.lower() == "y"):
+            bot_score = self._get_bot_score(screen_name)
+        else:
+            bot_score = "N/A"
+            
         print("Tweet Stats:")
         print(Counter(tweet_platform))
-
+        # cast to str for bot score information
+        print("Bot Score: " + str(bot_score))
         
     # eventually this needs to be moved to it's own class
     def bot_check(self):
 
+        counter = 0
+        for i in self.full_account_information:
+            print("Username: " + i["username"])
+            print(self._get_bot_score(i["username"]))
+            print(self.full_account_information[counter])
+            print("\n")
+            counter = counter + 1
+
+    def _get_bot_score(self, username):
+        # can also search bot sentinel https://botsentinel.com/category/all?s=obannons1969111
+        # in the future return 1 if trollbot or 0 if not
+        trollbot = 0
+        
         twitter_app_auth = {
             "consumer_key": config.consumer_key,
             "consumer_secret": config.consumer_secret,
             "access_token": config.access_token_key,
             "access_token_secret": config.access_token_secret
-            }
+        }
         
         bom = botometer.Botometer(wait_on_ratelimit=True,
                                   mashape_key=config.mashape_key,
                                   **twitter_app_auth)
-        counter = 0
-        for i in self.full_account_information:
-            bot_score = bom.check_account(i["username"])
-            print("Username: " + i["username"])
-            print("Bot Score(English): " + str(bot_score["display_scores"]["english"]))
-            print("Bot Score(Universal): " + str(bot_score["display_scores"]["universal"]))
-            print(self.full_account_information[counter])
-            print("\n")
-            counter = counter + 1
+        
+        score = bom.check_account(username)
+
+        bot_score = {"Bot Score(English)" : score["display_scores"]["english"],
+                     "Bot Score(Universal)" : score["display_scores"]["universal"],
+                     "Trollbot" : trollbot}
+        
+        return bot_score
