@@ -39,38 +39,42 @@ if __name__ == "__main__":
         
         print("0. Quit")
         user_choice = str(input(">> "))
+        
+        try:
+            if(user_choice.lower() == "a"):
+                trending_urls()
+                
+            elif(user_choice.lower() == "b"):
+                trending_hashtags()
+                
+            elif(user_choice == "1"):
+                url = str(input("URL: "))
+                twitter_data = Twitter_Search(url)
+                full_twitter_data = twitter_data.get_raw_information()
+                print(full_twitter_data)
+                
+            elif(user_choice == "2"):
+                url = str(input("URL: "))
+                twitter_data = Twitter_Search(url)
+                full_twitter_data = twitter_data.print_full_information()
 
-        if(user_choice.lower() == "a"):
-            trending_urls()
+            elif(user_choice == "3"):
+                url = str(input("URL: "))
+                twitter_data = Twitter_Search(url)
+                usernames = twitter_data.get_usernames()
+                print(usernames)
 
-        elif(user_choice.lower() == "b"):
-            trending_hashtags()
+            elif(user_choice == "4"):
+                url = str(input("URL: "))
+                twitter_data = Twitter_Search(url)
+                full_twitter_data = twitter_data.get_raw_information()
+                twitter_data.bot_check()
             
-        elif(user_choice == "1"):
-            url = str(input("URL: "))
-            twitter_data = Twitter_Search(url)
-            full_twitter_data = twitter_data.get_raw_information()
-            print(full_twitter_data)
-
-        elif(user_choice == "2"):
-            url = str(input("URL: "))
-            twitter_data = Twitter_Search(url)
-            full_twitter_data = twitter_data.print_full_information()
-
-        elif(user_choice == "3"):
-            url = str(input("URL: "))
-            twitter_data = Twitter_Search(url)
-            usernames = twitter_data.get_usernames()
-            print(usernames)
-
-        elif(user_choice == "4"):
-            url = str(input("URL: "))
-            twitter_data = Twitter_Search(url)
-            full_twitter_data = twitter_data.get_raw_information()
-            twitter_data.bot_check()
-            
-        elif(user_choice == "0"):
-            quit = True
-            sys.exit()
-        else:
-            "Please check your input"
+            elif(user_choice == "0"):
+                quit = True
+                sys.exit()
+                
+            else:
+                "Please check your input"
+        except Exception as e:
+            print(e)
